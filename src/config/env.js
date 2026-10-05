@@ -7,7 +7,8 @@ const requiredEnvVars = [
   'DB_PORT',
   'DB_NAME',
   'DB_USER',
-  'DB_PASSWORD'
+  'DB_PASSWORD',
+  'BCRYPT_ROUNDS'
 ];
 
 for (const variable of requiredEnvVars) {
@@ -26,6 +27,10 @@ const env = {
   jwt: {
     secret: process.env.JWT_SECRET,
     expiresIn: process.env.JWT_EXPIRES_IN || '15m'
+  },
+  security: {
+    bcryptRounds:
+        Number(process.env.BCRYPT_ROUNDS) || 12
   },
 
   database: {
