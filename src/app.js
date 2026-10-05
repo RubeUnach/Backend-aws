@@ -1,5 +1,5 @@
 const express = require('express');
-const { pool } = require('./config/database');
+const { sequelize } = require('./infrastructure/database/sequelize');
 
 const app = express();
 
@@ -10,13 +10,17 @@ app.use(express.json());
 
 app.get('/api/health', async (req, res) => {
   try {
-    await pool.query('SELECT 1');
+    await sequelize.query(
+      'SELECT 1 AS database_status'
+    );
 
     return res.status(200).json({
       status: 'ok',
       service: 'zero-trust-backend',
-      database: 'ok'
+      database: 'ok',
+      persistence: 'sequelize'
     });
+
   } catch (error) {
     return res.status(503).json({
       status: 'error',
