@@ -1,10 +1,15 @@
 const app = require('./app');
 const env = require('./config/env');
-const { testDatabaseConnection } = require('./config/database');
+
+const {
+  testSequelizeConnection
+} = require('./infrastructure/database/sequelize');
+
 
 async function startServer() {
   try {
-    const database = await testDatabaseConnection();
+    const database =
+      await testSequelizeConnection();
 
     console.log(
       `Base de datos conectada: ${database.current_database}`
@@ -19,6 +24,7 @@ async function startServer() {
         `Servidor ejecutándose en el puerto ${env.port}`
       );
     });
+
   } catch (error) {
     console.error(
       'No fue posible conectar con PostgreSQL:',
