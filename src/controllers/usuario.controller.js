@@ -20,7 +20,30 @@ async function create(req, res, next) {
   }
 }
 
+async function findAll(
+  req,
+  res,
+  next
+) {
+  try {
+
+    const usuarios =
+      await usuarioService.getAllUsers();
+
+
+    return res.status(200).json({
+      success: true,
+      data: usuarios
+    });
+
+  } catch (error) {
+
+    next(error);
+
+  }
+}
 
 module.exports = {
-  create
+  create,
+  findAll
 };
