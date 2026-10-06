@@ -1,8 +1,5 @@
-const {
-  LoginAttempt
-} = require(
-  '../infrastructure/database/models'
-);
+const { LoginAttempt } = require('../infrastructure/database/models');
+const { Op } = require('sequelize');
 
 
 async function create({
@@ -41,8 +38,31 @@ async function findRecentByUsername(
   });
 }
 
+async function findFailedByIpSince(
+  ipAddress,
+  since,
+  limit = 20
+) {
+  return LoginAttempt.findAll({
+    where: {
+      ipAddress,
+      success: false,
+
+      createdAt: {
+        [Op.gte]: since
+      }
+    },
+
+    order: [
+      ['createdAt', 'DESC']
+    ],
+
+    limit
+  });
+}
 
 module.exports = {
   create,
-  findRecentByUsername
+  findRecentByUsername,
+  findFailedByIpSince
 };

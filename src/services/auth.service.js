@@ -1,29 +1,12 @@
-const usuarioRepository =
-  require('../repositories/usuario.repository');
-
-const loginAttemptRepository =
-  require('../repositories/login-attempt.repository');
-
-const auditRepository =
-  require('../repositories/audit.repository');
-
-const {
-  verifyPassword
-} = require(
-  '../infrastructure/security/password.service'
-);
-
-const {
-  generateAccessToken
-} = require(
-  '../infrastructure/jwt/jwt.service'
-);
+const env = require('../config/env');
+const usuarioRepository = require('../repositories/usuario.repository');
+const loginAttemptRepository = require('../repositories/login-attempt.repository');
+const auditRepository = require('../repositories/audit.repository');
+const { verifyPassword } = require('../infrastructure/security/password.service');
+const { generateAccessToken } = require('../infrastructure/jwt/jwt.service');
 
 
-function createAuthError(
-  code,
-  message
-) {
+function createAuthError(code, message) {
   const error = new Error(message);
   error.code = code;
 
@@ -168,22 +151,128 @@ async function registerSuccessfulAttempt({
   );
 }
 
+async function checkTemporaryIpBlock({
+  ipAddress,
+  username,
+  userAgent
+}) {
 
-async function login(
-  {
-    username,
-    password
-  },
-  {
-    ipAddress = '0.0.0.0',
-    userAgent = 'unknown'
-  } = {}
-) {
+  const now =
+    new Date();
 
-  const usuario =
-    await usuarioRepository.findByUsername(
-      username
+
+  const windowStart =
+    new Date(
+      now.getTime() -
+      env.auth.blockWindowMinutes *
+      60 *
+      1000
     );
+
+
+  const failedAttempts =
+    await loginAttemptRepository
+      .findFailedByIpSince(
+        ipAddress,
+        windowStart,
+        env.auth.maxFailedAttempts
+      );
+
+
+  if (
+    failedAttempts.length <
+    env.auth.maxFailedAttempts
+  ) {
+    return;
+  }
+
+
+  const latestFailure =
+    new Date(
+      failedAttempts[0].createdAt
+    );
+
+
+  const blockedUntil =
+    new Date(
+      latestFailure.getTime() +
+      env.auth.blockMinutes *
+      60 *
+      1000
+    );
+
+
+  if (now >= blockedUntil) {
+    return;
+  }
+
+
+  const retryAfterSeconds =
+    Math.ceil(
+      (
+        blockedUntil.getTime() -
+        now.getTime()
+      ) / 1000
+    );
+
+
+  await auditRepository.create({
+    usuarioId: null,
+
+    action:
+      'LOGIN_BLOCKED',
+
+    resource:
+      '/api/auth/login',
+
+    httpMethod:
+      'POST',
+
+    ipAddress,
+
+    userAgent,
+
+    status:
+      'DENIED',
+
+    details: {
+      usernameAttempted:
+        username,
+
+      failedAttempts:
+        failedAttempts.length,
+
+      blockedUntil:
+        blockedUntil.toISOString()
+    }
+  });
+
+
+  console.warn(
+    `[AUTH_BLOCKED] ip=${sanitizeLogValue(ipAddress)} ` +
+    `username=${sanitizeLogValue(username)} ` +
+    `retryAfter=${retryAfterSeconds}`
+  );
+
+
+  const error =
+    createAuthError(
+      'IP_TEMPORARILY_BLOCKED',
+      'La dirección IP se encuentra temporalmente bloqueada'
+    );
+
+
+  error.retryAfter =
+    retryAfterSeconds;
+
+
+  throw error;
+}
+
+async function login({username, password}, {ipAddress = '0.0.0.0', userAgent = 'unknown'} = {}) {
+  await checkTemporaryIpBlock({ipAddress, username, userAgent});
+  
+  const usuario = await usuarioRepository.findByUsername(username);
 
 
   /*

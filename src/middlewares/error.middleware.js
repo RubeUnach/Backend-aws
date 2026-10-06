@@ -15,18 +15,21 @@ function errorHandler(error, req, res, next) {
     EMAIL_ALREADY_EXISTS: 409,
     USER_NOT_FOUND: 404,
     INVALID_CREDENTIALS: 401,
-    ACCOUNT_DISABLED: 403
+    ACCOUNT_DISABLED: 403,
+    IP_TEMPORARILY_BLOCKED: 429
   };
 
 
   if (error.code && serviceErrors[error.code]) {
+    if (error.code === 'IP_TEMPORARILY_BLOCKED' && error.retryAfter) 
+      res.set('Retry-After', String(error.retryAfter));
+
     return res.status(serviceErrors[error.code]).json({
       success: false,
       error: error.code,
       message: error.message
     });
   }
-
 
   if (error.name === 'SequelizeUniqueConstraintError') {
     return res.status(409).json({
