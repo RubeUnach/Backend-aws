@@ -1,5 +1,6 @@
-const authService =
-  require('../services/auth.service');
+const authService = require('../services/auth.service');
+
+const { getClientIp } = require('../utils/request.util');
 
 
 async function login(
@@ -35,32 +36,6 @@ async function login(
     next(error);
 
   }
-}
-
-function getClientIp(req) {
-
-  let ip =
-    req.ip ||
-    req.socket?.remoteAddress ||
-    '0.0.0.0';
-
-
-  /*
-   * Normalización IPv4 mapeada como IPv6:
-   *
-   * ::ffff:127.0.0.1
-   *          ↓
-   * 127.0.0.1
-   */
-  if (
-    ip.startsWith('::ffff:')
-  ) {
-    ip =
-      ip.substring(7);
-  }
-
-
-  return ip;
 }
 
 async function me(
