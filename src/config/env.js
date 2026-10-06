@@ -9,7 +9,10 @@ const requiredEnvVars = [
   'DB_USER',
   'DB_PASSWORD',
   'BCRYPT_ROUNDS',
-  'FRONTEND_ORIGIN'
+  'FRONTEND_ORIGIN',
+  'LOGIN_MAX_FAILED_ATTEMPTS',
+  'LOGIN_BLOCK_WINDOW_MINUTES',
+  'LOGIN_BLOCK_MINUTES'
 ];
 
 for (const variable of requiredEnvVars) {
@@ -43,6 +46,16 @@ const env = {
   },
   frontend: {
     origin: process.env.FRONTEND_ORIGIN
+  },
+  auth: {
+    maxFailedAttempts:
+      Number(process.env.LOGIN_MAX_FAILED_ATTEMPTS) || 3,
+
+    blockWindowMinutes:
+      Number(process.env.LOGIN_BLOCK_WINDOW_MINUTES) || 10,
+
+    blockMinutes:
+      Number(process.env.LOGIN_BLOCK_MINUTES) || 5
   },
 };
 
