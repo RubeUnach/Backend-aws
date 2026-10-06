@@ -1,32 +1,21 @@
-const express =
-  require('express');
+const express = require('express');
 
-const authController =
-  require('../controllers/auth.controller');
+const authController = require('../controllers/auth.controller');
 
-const {
-  loginDto
-} = require('../dto/login.dto');
+const { loginDto } = require('../dto/login.dto');
 
-const {
-  validate
-} = require(
-  '../middlewares/validate.middleware'
-);
+const { validate } = require('../middlewares/validate.middleware');
 
-const {
-  authenticate
-} = require(
-  '../middlewares/auth.middleware'
-);
+const { authenticate } = require('../middlewares/auth.middleware');
 
+const { loginLimiter } = require('../middlewares/rate-limit.middleware');
 
-const router =
-  express.Router();
+const router = express.Router();
 
 
 router.post(
   '/login',
+  loginLimiter,
   validate(loginDto),
   authController.login
 );
