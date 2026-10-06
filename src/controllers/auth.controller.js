@@ -11,7 +11,15 @@ async function login(
 
     const result =
       await authService.login(
-        req.validatedBody
+        req.validatedBody,
+        {
+          ipAddress:
+            getClientIp(req),
+
+          userAgent:
+            req.get('user-agent') ||
+            'unknown'
+        }
       );
 
 
@@ -29,6 +37,31 @@ async function login(
   }
 }
 
+function getClientIp(req) {
+
+  let ip =
+    req.ip ||
+    req.socket?.remoteAddress ||
+    '0.0.0.0';
+
+
+  /*
+   * Normalización IPv4 mapeada como IPv6:
+   *
+   * ::ffff:127.0.0.1
+   *          ↓
+   * 127.0.0.1
+   */
+  if (
+    ip.startsWith('::ffff:')
+  ) {
+    ip =
+      ip.substring(7);
+  }
+
+
+  return ip;
+}
 
 async function me(
   req,
