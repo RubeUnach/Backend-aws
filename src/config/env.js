@@ -8,7 +8,8 @@ const requiredEnvVars = [
   'DB_NAME',
   'DB_USER',
   'DB_PASSWORD',
-  'BCRYPT_ROUNDS'
+  'BCRYPT_ROUNDS',
+  'FRONTEND_ORIGIN'
 ];
 
 for (const variable of requiredEnvVars) {
@@ -39,7 +40,10 @@ const env = {
     name: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD
-  }
+  },
+  frontend: {
+    origin: process.env.FRONTEND_ORIGIN
+  },
 };
 
 module.exports = env;
