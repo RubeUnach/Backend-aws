@@ -28,7 +28,36 @@ function validate(dtoFactory) {
   };
 }
 
+function validateIdParam(
+  req,
+  res,
+  next
+) {
+  const id =
+    Number(req.params.id);
+
+
+  if (
+    !Number.isInteger(id) ||
+    id <= 0
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: 'INVALID_ID',
+      message:
+        'El identificador proporcionado no es válido'
+    });
+  }
+
+
+  req.validatedId =
+    id;
+
+
+  next();
+}
 
 module.exports = {
-  validate
+  validate,
+  validateIdParam
 };

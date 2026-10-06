@@ -168,6 +168,8 @@ function updateUsuarioDto(body = {}) {
       data.role = role;
   }
 
+  if (errors.length === 0 && Object.keys(data).length === 0) 
+    errors.push('Debe proporcionar al menos un campo para actualizar');
 
   return {
     valid: errors.length === 0,
@@ -176,10 +178,39 @@ function updateUsuarioDto(body = {}) {
   };
 }
 
+function statusUsuarioDto(
+  body = {}
+) {
+  const errors = [];
+
+
+  if (
+    typeof body.active !==
+    'boolean'
+  ) {
+    errors.push(
+      'El campo active debe ser booleano'
+    );
+  }
+
+
+  return {
+    valid:
+      errors.length === 0,
+
+    errors,
+
+    data: {
+      active:
+        body.active
+    }
+  };
+}
 
 module.exports = {
   createUsuarioDto,
   updateUsuarioDto,
+  statusUsuarioDto,
   validateUsername,
   validateEmail,
   validatePassword,
