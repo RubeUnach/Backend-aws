@@ -1,9 +1,7 @@
 const app = require('./app');
 const env = require('./config/env');
 
-const {
-  testSequelizeConnection
-} = require('./infrastructure/database/sequelize');
+const { testSequelizeConnection} = require('./infrastructure/database/sequelize');
 
 
 async function startServer() {
