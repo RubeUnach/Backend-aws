@@ -122,7 +122,43 @@ async function authenticate(
   }
 }
 
+function authorize(...allowedRoles) {
+
+  return function authorizationMiddleware(
+    req,
+    res,
+    next
+  ) {
+
+    if (!req.auth) {
+      return res.status(401).json({
+        success: false,
+        error: 'AUTHENTICATION_REQUIRED',
+        message:
+          'Se requiere autenticación'
+      });
+    }
+
+
+    if (
+      !allowedRoles.includes(
+        req.auth.role
+      )
+    ) {
+      return res.status(403).json({
+        success: false,
+        error: 'INSUFFICIENT_PERMISSIONS',
+        message:
+          'No cuenta con permisos para realizar esta operación'
+      });
+    }
+
+
+    next();
+  };
+}
 
 module.exports = {
-  authenticate
+  authenticate,
+  authorize
 };
