@@ -2,6 +2,7 @@ const express = require('express');
 const { sequelize } = require('./infrastructure/database/sequelize');
 const usuarioRoutes = require('./routes/usuario.routes');
 const { notFoundHandler, errorHandler } = require('./middlewares/error.middleware');
+const authRoutes = require('./routes/auth.routes');
 
 const app = express();
 
@@ -39,6 +40,10 @@ app.use(
   usuarioRoutes
 );
 
+app.use(
+  '/api/auth',
+  authRoutes
+);
 
 app.use(
   notFoundHandler

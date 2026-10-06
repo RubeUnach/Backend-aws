@@ -22,7 +22,10 @@ function errorHandler(
   const serviceErrors = {
     USERNAME_ALREADY_EXISTS: 409,
     EMAIL_ALREADY_EXISTS: 409,
-    USER_NOT_FOUND: 404
+    USER_NOT_FOUND: 404,
+
+    INVALID_CREDENTIALS: 401,
+    ACCOUNT_DISABLED: 403
   };
 
 
