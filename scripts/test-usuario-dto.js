@@ -34,7 +34,7 @@ const valid =
   createUsuarioDto({
     username: 'usuario_seguro',
     email: 'usuario@ejemplo.com',
-    password: '***REMOVED-CREDENTIAL***',
+    password: 'ExampleOnly_2026!',
     role: 'user'
   });
 
@@ -64,7 +64,7 @@ const invalidEmail =
   createUsuarioDto({
     username: 'usuario3',
     email: 'correo-invalido',
-    password: '***REMOVED-CREDENTIAL***',
+    password: 'ExampleOnly_2026!',
     role: 'user'
   });
 
@@ -79,7 +79,7 @@ const invalidRole =
   createUsuarioDto({
     username: 'usuario4',
     email: 'usuario4@ejemplo.com',
-    password: '***REMOVED-CREDENTIAL***',
+    password: 'ExampleOnly_2026!',
     role: 'superadmin'
   });
 
@@ -94,7 +94,7 @@ const invalidUsername =
   createUsuarioDto({
     username: 'us@rio!',
     email: 'usuario5@ejemplo.com',
-    password: '***REMOVED-CREDENTIAL***',
+    password: 'ExampleOnly_2026!',
     role: 'user'
   });
 
