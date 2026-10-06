@@ -9,6 +9,8 @@ const env = require('./config/env');
 
 const app = express();
 
+app.set('trust proxy', env.proxy.trust);
+
 //eliminanos la cabecera HTTP que express agrega por defecto para indicar que el nuestra apirest esta contruida con express
 app.disable('x-powered-by'); 
 

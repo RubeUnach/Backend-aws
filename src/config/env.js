@@ -12,7 +12,8 @@ const requiredEnvVars = [
   'FRONTEND_ORIGIN',
   'LOGIN_MAX_FAILED_ATTEMPTS',
   'LOGIN_BLOCK_WINDOW_MINUTES',
-  'LOGIN_BLOCK_MINUTES'
+  'LOGIN_BLOCK_MINUTES',
+  'TRUST_PROXY'
 ];
 
 for (const variable of requiredEnvVars) {
@@ -56,6 +57,10 @@ const env = {
 
     blockMinutes:
       Number(process.env.LOGIN_BLOCK_MINUTES) || 5
+  },
+  proxy: {
+    trust:
+      process.env.TRUST_PROXY
   },
 };
 
