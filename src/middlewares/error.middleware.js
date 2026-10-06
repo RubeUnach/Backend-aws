@@ -48,20 +48,27 @@ function errorHandler(error, req, res, next) {
     });
   }
 
+  if (error.code === 'CORS_NOT_ALLOWED') {
+    return res.status(403).json({
+      success: false,
+      error: 'CORS_NOT_ALLOWED',
+      message: 'El origen de la solicitud no está permitido'
+    });
+  }
+
+  if (error.type === 'entity.too.large' || error.status === 413) {
+    return res.status(413).json({
+      success: false,
+      error: 'PAYLOAD_TOO_LARGE',
+      message: 'El cuerpo de la solicitud excede el tamaño permitido'
+    });
+  }
 
   if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
     return res.status(400).json({
       success: false,
       error: 'INVALID_JSON',
       message: 'El cuerpo de la solicitud contiene JSON inválido'
-    });
-  }
-
-  if (error.code === 'CORS_NOT_ALLOWED') {
-    return res.status(403).json({
-      success: false,
-      error: 'CORS_NOT_ALLOWED',
-      message: 'El origen de la solicitud no está permitido'
     });
   }
 
